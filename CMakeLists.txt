@@ -10,6 +10,7 @@ add_subdirectory(third_party)
 add_executable(graph.x)
 
 add_subdirectory(src/hlp)
+add_subdirectory(src/dag)
 
 target_sources(graph.x
     PRIVATE
@@ -25,6 +26,7 @@ target_link_libraries(graph.x
     PRIVATE 
         graph-flags
         hlp
+        dag
 
         spdlog
 )
