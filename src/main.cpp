@@ -4,6 +4,7 @@
 #include <spdlog/common.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "dag/cfg.hpp"
 #include "dag/dag.hpp"
 
 int main(const int argc, const char* argv[]) {
@@ -25,15 +26,18 @@ int main(const int argc, const char* argv[]) {
     }
 
     try {
-        dag::Dag dag;
-        dag.DotDump("graph.dot");
+        graph::Cfg cfg{};
+        cfg.DotDump("graph.dot");
 
-        // dag.TopologicalSort();
-        // dag.ComputeDomSet();
-        dag.BuildDomTree();
+        auto&& idom_tree = cfg.BuildIDomTree();
+        idom_tree.DotDump("idom_tree.dot");
+
+        auto&& postdom_tree = cfg.BuildPostDomTree();
+        postdom_tree.DotDump("postdom_tree.dot");
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     } catch (...) {
         std::cerr << "Unknown error" << std::endl;
     }
 }
+

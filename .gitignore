@@ -2,3 +2,7 @@ build
 *.log
 compile_commands.json
 .cache
+
+*.dot
+*.svg
+*.txt
