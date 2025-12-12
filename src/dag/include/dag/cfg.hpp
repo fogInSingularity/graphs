@@ -1,33 +1,6 @@
 #ifndef CFG_HPP_
 #define CFG_HPP_
 
-// На вход подается текстовый файл с описанием графа в формате:
-// [Номер узла][разделитель][номер узла преемника][разделитель][номер узла преемника] и т.д.
-
-// Пример:
-// 3 5 7 2
-// 5 9
-// 7 9
-
-// Означает следующий граф:
-
-//       Node3
-//     /  |   \
-// Node5 Node7 Node2
-//  \    /
-//   Node9
-
-// Задание:
-
-// 1. Построить граф на основе списков смежности
-// 2. Достроить узлы Start и End (связать все подграфы в единый граф)
-// 3. Убедиться, что данный граф ациклический
-// 4. Провести топологическую сортировку данного графа.
-// 5. Построить дерево доминаторов данного графа 
-// 6. Построить дерево постдоминаторов данного графа
-
-// Результатирующие графы должны выводиться в формате graphviz
-
 #include <unordered_map>
 #include <unordered_set>
 #include <stdexcept>
@@ -117,13 +90,21 @@ class Cfg : public Dag {
 
     template <typename Func>
     void DFSImpl(Func func, std::unordered_map<Id, Color>* colors, const Node& node) {
+        static_assert(
+            std::is_invocable_v<Func&, const Node&>, 
+            "UnorderedTraverse expects function"
+        );
+        assert(colors != nullptr);
+
         if (!colors->contains(node.id_)) {
             colors->insert({node.id_, Color::kWhite});
         }
 
         auto color = colors->at(node.id_);
         if (color == Color::kBlack) { return ; }
-        if (color == Color::kGrey) { throw std::runtime_error{"Cycle detected"}; }
+        if (color == Color::kGrey) { 
+            throw std::runtime_error{"Cycle detected"}; 
+        }
 
         colors->at(node.id_) = Color::kGrey;
 
@@ -141,6 +122,11 @@ class Cfg : public Dag {
   public:
     template <typename Func>
     void DFS(Func func) {
+        static_assert(
+            std::is_invocable_v<Func&, const Node&>, 
+            "UnorderedTraverse expects function"
+        );
+
         std::unordered_map<Id, Color> colors{};
 
         DFSImpl(func, &colors, nodes_[start_id_]);
